@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '../ui/AppButton';
 import { AppInput } from '../ui/AppInput';
@@ -10,6 +11,8 @@ type AddRecordFormState = {
   dateTime: string;
   notes: string;
 };
+
+const MAX_MODAL_HEIGHT = '86%';
 
 type AddRecordModalProps = {
   visible: boolean;
@@ -28,9 +31,10 @@ export const AddRecordModal = ({
   onChange,
   onSubmit,
 }: AddRecordModalProps) => {
-  const filteredContacts = contactOptions
-    .filter((item) => item.toLowerCase().includes(form.name.toLowerCase()))
-    .slice(0, 4);
+  const filteredContacts = useMemo(
+    () => contactOptions.filter((item) => item.toLowerCase().includes(form.name.toLowerCase())).slice(0, 4),
+    [contactOptions, form.name],
+  );
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radius.lg,
     padding: spacing.md,
     paddingBottom: spacing.lg,
-    maxHeight: '86%',
+    maxHeight: MAX_MODAL_HEIGHT,
   },
   title: {
     color: colors.textPrimary,
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },

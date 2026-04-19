@@ -34,7 +34,7 @@ export const RecordsScreen = ({
     )}
     ListHeaderComponent={
       <View>
-        <TopAppBar title="Records" />
+        <TopAppBar title="Records" greeting="Track every transaction" />
         <AppInput
           label="Search"
           placeholder="Search by name or reason"
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   search: {
     borderRadius: radius.pill,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.primarySurface,
   },
   filters: {
     flexDirection: 'row',
@@ -82,13 +82,13 @@ const styles = StyleSheet.create({
   },
   filterTab: {
     flex: 1,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: radius.pill,
     paddingVertical: 10,
     alignItems: 'center',
   },
   filterTabActive: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.primarySoft,
   },
   filterText: {
     color: colors.textSecondary,

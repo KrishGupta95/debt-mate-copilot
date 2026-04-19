@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   summaryCard: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryTint,
     marginBottom: spacing.md,
   },
   summaryRow: {
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   remaining: {
-    color: '#DC2626',
+    color: colors.danger,
   },
   amountInput: {
     fontSize: 22,

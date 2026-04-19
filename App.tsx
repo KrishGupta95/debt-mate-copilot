@@ -116,7 +116,7 @@ export default function App() {
       } else {
         existing.outstanding += remaining;
         existing.transactions += 1;
-        if (+new Date(record.dateTime) > +new Date(existing.lastTransactionDate)) {
+        if (Date.parse(record.dateTime) > Date.parse(existing.lastTransactionDate)) {
           existing.lastTransactionDate = record.dateTime;
         }
       }

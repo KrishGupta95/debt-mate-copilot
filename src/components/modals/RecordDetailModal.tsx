@@ -10,6 +10,8 @@ type RecordDetailModalProps = {
   onClose: () => void;
 };
 
+const MAX_MODAL_HEIGHT = '78%';
+
 export const RecordDetailModal = ({ visible, record, onClose }: RecordDetailModalProps) => {
   if (!record) {
     return null;
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
-    maxHeight: '78%',
+    maxHeight: MAX_MODAL_HEIGHT,
     padding: spacing.md,
   },
   header: {
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
   },
   timelineItem: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   timelineTop: {
     flexDirection: 'row',

@@ -10,7 +10,7 @@ export const AppInput = ({ label, containerStyle, ...props }: AppInputProps) => 
   <View style={styles.container}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
-      placeholderTextColor="#94A3B8"
+      placeholderTextColor={colors.muted}
       style={[styles.input, containerStyle]}
       {...props}
     />
@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 12,
     color: colors.textPrimary,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
 });

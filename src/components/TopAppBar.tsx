@@ -7,7 +7,7 @@ type TopAppBarProps = {
   avatarText?: string;
 };
 
-export const TopAppBar = ({ title, greeting, avatarText = 'KG' }: TopAppBarProps) => (
+export const TopAppBar = ({ title, greeting, avatarText = 'DM' }: TopAppBarProps) => (
   <View style={styles.container}>
     <View style={styles.textWrap}>
       <Text style={styles.title}>{title}</Text>

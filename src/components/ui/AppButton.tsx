@@ -39,13 +39,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: colors.surfaceMuted,
   },
   successButton: {
     backgroundColor: colors.success,
   },
   dangerButton: {
-    backgroundColor: '#DC2626',
+    backgroundColor: colors.danger,
   },
   fill: {
     width: '100%',

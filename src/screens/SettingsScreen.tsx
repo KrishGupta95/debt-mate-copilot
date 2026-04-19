@@ -104,14 +104,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   currencyPill: {
-    backgroundColor: '#E2E8F0',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 999,
     paddingVertical: 10,
     alignItems: 'center',
     marginTop: spacing.sm,
   },
   currencyPillActive: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.primarySoft,
   },
   currencyText: {
     color: colors.textSecondary,
@@ -125,13 +125,13 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     marginTop: spacing.md,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorSoft,
     borderRadius: 16,
     paddingVertical: 14,
     alignItems: 'center',
   },
   resetText: {
-    color: '#DC2626',
+    color: colors.danger,
     fontWeight: '700',
   },
 });

@@ -11,6 +11,11 @@ export const colors = {
   border: '#E2E8F0',
   pending: '#F59E0B',
   muted: '#94A3B8',
+  surfaceMuted: '#E2E8F0',
+  primarySoft: '#DBEAFE',
+  primarySurface: '#EEF2FF',
+  primaryTint: '#EFF6FF',
+  errorSoft: '#FEE2E2',
 };
 
 export const spacing = {

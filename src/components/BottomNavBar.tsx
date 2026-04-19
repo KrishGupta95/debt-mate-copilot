@@ -11,6 +11,7 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Home' },
   { key: 'records', label: 'Records' },
   { key: 'contacts', label: 'Contacts' },
+  { key: 'settings', label: 'Settings' },
 ];
 
 export const BottomNavBar = ({ activeTab, onTabChange }: BottomNavBarProps) => (
@@ -18,11 +19,7 @@ export const BottomNavBar = ({ activeTab, onTabChange }: BottomNavBarProps) => (
     {tabs.map((tab) => {
       const isActive = tab.key === activeTab;
       return (
-        <Pressable
-          key={tab.key}
-          style={[styles.tab, isActive && styles.activeTab]}
-          onPress={() => onTabChange(tab.key)}
-        >
+        <Pressable key={tab.key} style={[styles.tab, isActive && styles.activeTab]} onPress={() => onTabChange(tab.key)}>
           <Text style={[styles.label, isActive && styles.activeLabel]}>{tab.label}</Text>
         </Pressable>
       );
@@ -32,12 +29,14 @@ export const BottomNavBar = ({ activeTab, onTabChange }: BottomNavBarProps) => (
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    left: spacing.md,
+    right: spacing.md,
+    bottom: spacing.md,
     flexDirection: 'row',
     backgroundColor: colors.card,
-    padding: spacing.sm,
+    padding: spacing.xs,
     borderRadius: radius.lg,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.md,
     ...shadow.card,
   },
   tab: {
@@ -52,6 +51,7 @@ const styles = StyleSheet.create({
   label: {
     color: colors.textSecondary,
     fontWeight: '600',
+    fontSize: 12,
   },
   activeLabel: {
     color: colors.primary,

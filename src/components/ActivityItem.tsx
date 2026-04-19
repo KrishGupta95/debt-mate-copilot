@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, radius, shadow, spacing } from '../theme';
+import { AppCard } from './ui/AppCard';
+import { colors, radius, spacing } from '../theme';
 import { DebtRecord } from '../types';
 import { formatDateTime, formatInr, getPaidAmount } from '../utils/format';
 
@@ -13,60 +14,67 @@ export const ActivityItem = ({ item }: ActivityItemProps) => {
   const isPaid = remaining === 0;
 
   return (
-    <View style={styles.card}>
+    <AppCard style={styles.card}>
       <View style={styles.row}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.amount}>{formatInr(remaining)}</Text>
-      </View>
-      <Text style={styles.reason}>{item.reason}</Text>
-      <View style={styles.row}>
-        <Text style={styles.time}>{formatDateTime(item.dateTime)}</Text>
-        <View style={[styles.badge, isPaid ? styles.badgePaid : styles.badgePending]}>
-          <Text style={[styles.badgeText, isPaid ? styles.badgeTextPaid : styles.badgeTextPending]}>
-            {isPaid ? 'Paid' : 'Pending'}
-          </Text>
+        <View style={styles.grow}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.reason}>{item.reason}</Text>
+          <Text style={styles.time}>{formatDateTime(item.dateTime)}</Text>
+        </View>
+        <View style={styles.rightPane}>
+          <Text style={styles.amount}>{formatInr(remaining)}</Text>
+          <View style={[styles.badge, isPaid ? styles.badgePaid : styles.badgePending]}>
+            <Text style={[styles.badgeText, isPaid ? styles.badgeTextPaid : styles.badgeTextPending]}>
+              {isPaid ? 'Paid' : 'Pending'}
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </AppCard>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    padding: spacing.md,
     marginBottom: spacing.md,
-    ...shadow.card,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+  },
+  grow: {
+    flex: 1,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  amount: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.textPrimary,
   },
   reason: {
-    marginTop: 6,
-    marginBottom: 10,
+    marginTop: 4,
     color: colors.textSecondary,
+    fontSize: 13,
   },
   time: {
-    color: colors.textSecondary,
+    marginTop: 6,
+    color: colors.muted,
     fontSize: 12,
+  },
+  rightPane: {
+    alignItems: 'flex-end',
+  },
+  amount: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   badge: {
     borderRadius: radius.pill,
     paddingVertical: 6,
     paddingHorizontal: 12,
+    marginTop: 8,
   },
   badgePending: {
     backgroundColor: '#FEF3C7',
@@ -76,7 +84,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   badgeTextPending: {
     color: '#B45309',

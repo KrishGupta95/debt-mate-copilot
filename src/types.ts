@@ -21,6 +21,7 @@ export type ContactSummary = {
   name: string;
   outstanding: number;
   transactions: number;
+  lastTransactionDate: string;
 };
 
-export type TabKey = 'home' | 'records' | 'contacts';
+export type TabKey = 'home' | 'records' | 'contacts' | 'settings';

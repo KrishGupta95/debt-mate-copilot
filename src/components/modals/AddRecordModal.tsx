@@ -1,4 +1,7 @@
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useMemo } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AppButton } from '../ui/AppButton';
+import { AppInput } from '../ui/AppInput';
 import { colors, radius, spacing } from '../../theme';
 
 type AddRecordFormState = {
@@ -9,65 +12,92 @@ type AddRecordFormState = {
   notes: string;
 };
 
+const MAX_MODAL_HEIGHT = '86%';
+
 type AddRecordModalProps = {
   visible: boolean;
   form: AddRecordFormState;
+  contactOptions: string[];
   onClose: () => void;
   onChange: (field: keyof AddRecordFormState, value: string) => void;
   onSubmit: () => void;
 };
 
-export const AddRecordModal = ({ visible, form, onClose, onChange, onSubmit }: AddRecordModalProps) => (
-  <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-    <View style={styles.overlay}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Add Record</Text>
+export const AddRecordModal = ({
+  visible,
+  form,
+  contactOptions,
+  onClose,
+  onChange,
+  onSubmit,
+}: AddRecordModalProps) => {
+  const filteredContacts = useMemo(
+    () => contactOptions.filter((item) => item.toLowerCase().includes(form.name.toLowerCase())).slice(0, 4),
+    [contactOptions, form.name],
+  );
 
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={form.name}
-          onChangeText={(value) => onChange('name', value)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Amount"
-          keyboardType="numeric"
-          value={form.amount}
-          onChangeText={(value) => onChange('amount', value)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Reason"
-          value={form.reason}
-          onChangeText={(value) => onChange('reason', value)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Date & Time (YYYY-MM-DDTHH:mm:ss)"
-          value={form.dateTime}
-          onChangeText={(value) => onChange('dateTime', value)}
-        />
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          placeholder="Notes"
-          multiline
-          value={form.notes}
-          onChangeText={(value) => onChange('notes', value)}
-        />
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Add Record</Text>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <AppInput
+              label="Contact"
+              placeholder="Search or type contact"
+              value={form.name}
+              onChangeText={(value) => onChange('name', value)}
+            />
 
-        <View style={styles.actions}>
-          <Pressable style={[styles.button, styles.cancelButton]} onPress={onClose}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </Pressable>
-          <Pressable style={[styles.button, styles.addButton]} onPress={onSubmit}>
-            <Text style={styles.addText}>Save</Text>
-          </Pressable>
+            {form.name.trim().length > 0 && filteredContacts.length > 0 ? (
+              <View style={styles.suggestions}>
+                {filteredContacts.map((item) => (
+                  <Pressable key={item} style={styles.suggestionItem} onPress={() => onChange('name', item)}>
+                    <Text style={styles.suggestionText}>{item}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+
+            <AppInput
+              label="Amount"
+              placeholder="0"
+              keyboardType="numeric"
+              value={form.amount}
+              onChangeText={(value) => onChange('amount', value)}
+              containerStyle={styles.amountInput}
+            />
+            <AppInput
+              label="Reason"
+              placeholder="Dinner split"
+              value={form.reason}
+              onChangeText={(value) => onChange('reason', value)}
+            />
+            <AppInput
+              label="Date & Time"
+              placeholder="YYYY-MM-DDTHH:mm:ss"
+              value={form.dateTime}
+              onChangeText={(value) => onChange('dateTime', value)}
+            />
+            <AppInput
+              label="Notes (optional)"
+              placeholder="Add notes"
+              multiline
+              value={form.notes}
+              onChangeText={(value) => onChange('notes', value)}
+              containerStyle={styles.notesInput}
+            />
+          </ScrollView>
+
+          <View style={styles.actions}>
+            <AppButton label="Cancel" variant="secondary" onPress={onClose} style={styles.actionButton} />
+            <AppButton label="Save Record" onPress={onSubmit} style={styles.actionButton} />
+          </View>
         </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   overlay: {
@@ -80,51 +110,48 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
     padding: spacing.md,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.lg,
+    maxHeight: MAX_MODAL_HEIGHT,
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 20,
+    fontSize: 21,
     fontWeight: '700',
     marginBottom: spacing.md,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
-    marginBottom: spacing.sm,
-    color: colors.textPrimary,
+  amountInput: {
+    fontSize: 24,
+    fontWeight: '700',
   },
   notesInput: {
     minHeight: 80,
     textAlignVertical: 'top',
   },
+  suggestions: {
+    marginTop: -8,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+  },
+  suggestionItem: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+    backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  suggestionText: {
+    color: colors.textPrimary,
+    fontSize: 14,
+  },
   actions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.sm,
     gap: spacing.sm,
+    marginTop: spacing.sm,
   },
-  button: {
+  actionButton: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: radius.md,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#E2E8F0',
-  },
-  addButton: {
-    backgroundColor: colors.primary,
-  },
-  cancelText: {
-    color: colors.textSecondary,
-    fontWeight: '700',
-  },
-  addText: {
-    color: colors.card,
-    fontWeight: '700',
   },
 });

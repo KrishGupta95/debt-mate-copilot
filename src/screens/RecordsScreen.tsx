@@ -1,6 +1,7 @@
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { RecordCard } from '../components/RecordCard';
 import { TopAppBar } from '../components/TopAppBar';
+import { AppInput } from '../components/ui/AppInput';
 import { colors, radius, spacing } from '../theme';
 import { DebtRecord, RecordStatus } from '../types';
 
@@ -11,6 +12,7 @@ type RecordsScreenProps = {
   onFilterChange: (filter: 'All' | RecordStatus) => void;
   onSearchChange: (value: string) => void;
   onOpenDetails: (record: DebtRecord) => void;
+  onOpenActions: (record: DebtRecord) => void;
 };
 
 const filters: ('All' | RecordStatus)[] = ['All', 'Pending', 'Paid'];
@@ -22,20 +24,23 @@ export const RecordsScreen = ({
   onFilterChange,
   onSearchChange,
   onOpenDetails,
+  onOpenActions,
 }: RecordsScreenProps) => (
   <FlatList
     data={records}
     keyExtractor={(item) => item.id}
-    renderItem={({ item }) => <RecordCard item={item} onMenuPress={() => onOpenDetails(item)} />}
+    renderItem={({ item }) => (
+      <RecordCard item={item} onPress={() => onOpenDetails(item)} onMenuPress={() => onOpenActions(item)} />
+    )}
     ListHeaderComponent={
       <View>
         <TopAppBar title="Records" greeting="Track every transaction" />
-        <TextInput
+        <AppInput
+          label="Search"
           placeholder="Search by name or reason"
           value={search}
           onChangeText={onSearchChange}
-          style={styles.search}
-          placeholderTextColor={colors.textSecondary}
+          containerStyle={styles.search}
         />
         <View style={styles.filters}>
           {filters.map((item) => {
@@ -67,14 +72,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   search: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
-    marginBottom: spacing.md,
-    color: colors.textPrimary,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySurface,
   },
   filters: {
     flexDirection: 'row',
@@ -83,13 +82,13 @@ const styles = StyleSheet.create({
   },
   filterTab: {
     flex: 1,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: radius.pill,
     paddingVertical: 10,
     alignItems: 'center',
   },
   filterTabActive: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.primarySoft,
   },
   filterText: {
     color: colors.textSecondary,

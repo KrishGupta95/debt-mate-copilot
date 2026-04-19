@@ -5,11 +5,13 @@ import { BottomNavBar } from './src/components/BottomNavBar';
 import { FloatingActionButton } from './src/components/FloatingActionButton';
 import { AddRecordModal } from './src/components/modals/AddRecordModal';
 import { PaymentModal } from './src/components/modals/PaymentModal';
+import { RecordActionsModal } from './src/components/modals/RecordActionsModal';
 import { RecordDetailModal } from './src/components/modals/RecordDetailModal';
 import { ContactDetailScreen } from './src/screens/ContactDetailScreen';
 import { ContactsScreen } from './src/screens/ContactsScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { RecordsScreen } from './src/screens/RecordsScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
 import { colors } from './src/theme';
 import { ContactSummary, DebtRecord, RecordStatus, TabKey } from './src/types';
 import { getPaidAmount } from './src/utils/format';
@@ -69,9 +71,11 @@ export default function App() {
   const [showAddRecordModal, setShowAddRecordModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showRecordDetailModal, setShowRecordDetailModal] = useState(false);
+  const [showRecordActionsModal, setShowRecordActionsModal] = useState(false);
 
   const [recordForPayment, setRecordForPayment] = useState<DebtRecord | null>(null);
   const [recordForDetail, setRecordForDetail] = useState<DebtRecord | null>(null);
+  const [recordForActions, setRecordForActions] = useState<DebtRecord | null>(null);
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'All' | RecordStatus>('All');
@@ -85,12 +89,18 @@ export default function App() {
     notes: '',
   });
 
+  const [darkMode, setDarkMode] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [currency, setCurrency] = useState('₹ INR');
+
   const sortedRecent = useMemo(
     () => [...records].sort((a, b) => +new Date(b.dateTime) - +new Date(a.dateTime)).slice(0, 8),
     [records],
   );
 
   const totalPending = useMemo(() => records.reduce((sum, record) => sum + getRemaining(record), 0), [records]);
+
+  const totalLent = useMemo(() => records.reduce((sum, record) => sum + record.amount, 0), [records]);
 
   const contacts: ContactSummary[] = useMemo(() => {
     const grouped = records.reduce<Record<string, ContactSummary>>((acc, record) => {
@@ -101,10 +111,14 @@ export default function App() {
           name: record.name,
           outstanding: remaining,
           transactions: 1,
+          lastTransactionDate: record.dateTime,
         };
       } else {
         existing.outstanding += remaining;
         existing.transactions += 1;
+        if (Date.parse(record.dateTime) > Date.parse(existing.lastTransactionDate)) {
+          existing.lastTransactionDate = record.dateTime;
+        }
       }
       return acc;
     }, {});
@@ -118,9 +132,7 @@ export default function App() {
       const status = getUpdatedStatus(record);
       const matchesFilter = filter === 'All' ? true : status === filter;
       const matchesSearch =
-        query.length === 0 ||
-        record.name.toLowerCase().includes(query) ||
-        record.reason.toLowerCase().includes(query);
+        query.length === 0 || record.name.toLowerCase().includes(query) || record.reason.toLowerCase().includes(query);
       return matchesFilter && matchesSearch;
     });
   }, [filter, records, search]);
@@ -228,6 +240,83 @@ export default function App() {
     setShowRecordDetailModal(true);
   };
 
+  const openRecordActions = (record: DebtRecord) => {
+    setRecordForActions(record);
+    setShowRecordActionsModal(true);
+  };
+
+  const handleMarkFullyPaid = () => {
+    if (!recordForActions) {
+      return;
+    }
+
+    const remaining = getRemaining(recordForActions);
+    if (remaining <= 0) {
+      Alert.alert('Already settled', 'This record is already fully paid.');
+      return;
+    }
+
+    setRecords((prev) =>
+      prev.map((record) => {
+        if (record.id !== recordForActions.id) {
+          return record;
+        }
+
+        const updated: DebtRecord = {
+          ...record,
+          payments: [
+            ...record.payments,
+            {
+              id: `p-${Date.now()}`,
+              amount: remaining,
+              paidAt: new Date().toISOString(),
+            },
+          ],
+        };
+
+        return {
+          ...updated,
+          status: 'Paid',
+        };
+      }),
+    );
+
+    setShowRecordActionsModal(false);
+  };
+
+  const handleDeleteRecord = () => {
+    if (!recordForActions) {
+      return;
+    }
+
+    Alert.alert('Delete record?', 'This action cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setRecords((prev) => prev.filter((record) => record.id !== recordForActions.id));
+          setShowRecordActionsModal(false);
+          setShowRecordDetailModal(false);
+        },
+      },
+    ]);
+  };
+
+  const handleResetData = () => {
+    Alert.alert('Reset all data?', 'This will restore demo data and remove your current records.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Reset',
+        style: 'destructive',
+        onPress: () => {
+          setRecords(initialRecords);
+          setSelectedContact(null);
+        },
+      },
+    ]);
+  };
+
   const currentPaymentRecord = recordForPayment
     ? records.find((record) => record.id === recordForPayment.id) || recordForPayment
     : null;
@@ -249,7 +338,12 @@ export default function App() {
             }}
           />
         ) : activeTab === 'home' ? (
-          <HomeScreen records={sortedRecent} totalPending={totalPending} />
+          <HomeScreen
+            records={sortedRecent}
+            totalPending={totalPending}
+            totalLent={totalLent}
+            totalContacts={contacts.length}
+          />
         ) : activeTab === 'records' ? (
           <RecordsScreen
             records={filteredRecords}
@@ -258,9 +352,20 @@ export default function App() {
             onFilterChange={setFilter}
             onSearchChange={setSearch}
             onOpenDetails={openRecordDetails}
+            onOpenActions={openRecordActions}
           />
-        ) : (
+        ) : activeTab === 'contacts' ? (
           <ContactsScreen contacts={contacts} onSelectContact={setSelectedContact} />
+        ) : (
+          <SettingsScreen
+            darkMode={darkMode}
+            notifications={notificationsEnabled}
+            currency={currency}
+            onDarkModeChange={setDarkMode}
+            onNotificationsChange={setNotificationsEnabled}
+            onCurrencyChange={setCurrency}
+            onResetData={handleResetData}
+          />
         )}
       </View>
 
@@ -274,9 +379,22 @@ export default function App() {
       <AddRecordModal
         visible={showAddRecordModal}
         form={form}
+        contactOptions={contacts.map((item) => item.name)}
         onClose={() => setShowAddRecordModal(false)}
         onChange={handleFormChange}
         onSubmit={handleAddRecord}
+      />
+
+      <RecordActionsModal
+        visible={showRecordActionsModal}
+        record={recordForActions}
+        onClose={() => setShowRecordActionsModal(false)}
+        onAddPayment={() => {
+          setShowRecordActionsModal(false);
+          openPayment(recordForActions);
+        }}
+        onMarkFullyPaid={handleMarkFullyPaid}
+        onDelete={handleDeleteRecord}
       />
 
       <PaymentModal

@@ -9,7 +9,7 @@ type TopAppBarProps = {
 
 export const TopAppBar = ({ title, greeting, avatarText = 'DM' }: TopAppBarProps) => (
   <View style={styles.container}>
-    <View>
+    <View style={styles.textWrap}>
       <Text style={styles.title}>{title}</Text>
       {greeting ? <Text style={styles.greeting}>{greeting}</Text> : null}
     </View>
@@ -26,6 +26,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.lg,
   },
+  textWrap: {
+    flex: 1,
+  },
   title: {
     fontSize: 24,
     fontWeight: '700',
@@ -37,15 +40,18 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#DBEAFE',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
   },
   avatarText: {
     color: colors.primary,
     fontWeight: '700',
+    fontSize: 13,
   },
 });

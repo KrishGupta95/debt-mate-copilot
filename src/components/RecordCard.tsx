@@ -1,71 +1,79 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, shadow, spacing } from '../theme';
+import { AppCard } from './ui/AppCard';
+import { colors, radius, spacing } from '../theme';
 import { DebtRecord } from '../types';
 import { formatDateTime, formatInr, getPaidAmount } from '../utils/format';
 
 type RecordCardProps = {
   item: DebtRecord;
   onMenuPress: () => void;
+  onPress: () => void;
 };
 
-export const RecordCard = ({ item, onMenuPress }: RecordCardProps) => {
+export const RecordCard = ({ item, onMenuPress, onPress }: RecordCardProps) => {
   const paid = getPaidAmount(item.payments);
   const remaining = Math.max(item.amount - paid, 0);
   const isPaid = remaining === 0;
 
   return (
-    <View style={styles.card}>
-      <View style={styles.topRow}>
-        <View>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.reason}>{item.reason}</Text>
+    <Pressable onPress={onPress}>
+      <AppCard style={styles.card}>
+        <View style={styles.topRow}>
+          <View style={styles.leftInfo}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.reason}>{item.reason}</Text>
+            <Text style={styles.date}>{formatDateTime(item.dateTime)}</Text>
+          </View>
+          <Pressable onPress={onMenuPress} style={styles.menuButton}>
+            <Text style={styles.menuText}>⋯</Text>
+          </Pressable>
         </View>
-        <Pressable onPress={onMenuPress} style={styles.menuButton}>
-          <Text style={styles.menuText}>⋯</Text>
-        </Pressable>
-      </View>
 
-      <View style={styles.bottomRow}>
-        <View>
+        <View style={styles.bottomRow}>
           <Text style={styles.amount}>{formatInr(remaining)}</Text>
-          <Text style={styles.date}>{formatDateTime(item.dateTime)}</Text>
+          <View style={[styles.badge, isPaid ? styles.paidBadge : styles.pendingBadge]}>
+            <Text style={[styles.badgeText, isPaid ? styles.paidText : styles.pendingText]}>
+              {isPaid ? 'Paid' : 'Pending'}
+            </Text>
+          </View>
         </View>
-        <View style={[styles.badge, isPaid ? styles.paidBadge : styles.pendingBadge]}>
-          <Text style={[styles.badgeText, isPaid ? styles.paidText : styles.pendingText]}>
-            {isPaid ? 'Paid' : 'Pending'}
-          </Text>
-        </View>
-      </View>
-    </View>
+      </AppCard>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    padding: spacing.md,
     marginBottom: spacing.md,
-    ...shadow.card,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: spacing.sm,
+  },
+  leftInfo: {
+    flex: 1,
   },
   name: {
     color: colors.textPrimary,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
   },
   reason: {
     color: colors.textSecondary,
     marginTop: 4,
+    fontSize: 13,
+  },
+  date: {
+    color: colors.muted,
+    marginTop: 6,
+    fontSize: 12,
   },
   menuButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F1F5F9',
@@ -76,20 +84,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   bottomRow: {
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   amount: {
     color: colors.textPrimary,
-    fontSize: 20,
+    fontSize: 21,
     fontWeight: '700',
-  },
-  date: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    marginTop: 2,
   },
   badge: {
     borderRadius: radius.pill,

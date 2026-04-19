@@ -1,5 +1,6 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { colors, shadow } from '../theme';
+import { radius, shadow } from '../theme';
 
 type FloatingActionButtonProps = {
   onPress: () => void;
@@ -7,7 +8,9 @@ type FloatingActionButtonProps = {
 
 export const FloatingActionButton = ({ onPress }: FloatingActionButtonProps) => (
   <Pressable style={styles.button} onPress={onPress}>
-    <Text style={styles.icon}>＋</Text>
+    <LinearGradient colors={['#2563EB', '#4F46E5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gradient}>
+      <Text style={styles.icon}>＋</Text>
+    </LinearGradient>
   </Pressable>
 );
 
@@ -15,18 +18,20 @@ const styles = StyleSheet.create({
   button: {
     position: 'absolute',
     right: 20,
-    bottom: 92,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
+    bottom: 104,
+    borderRadius: radius.pill,
+    ...shadow.card,
+  },
+  gradient: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadow.card,
   },
   icon: {
     color: '#FFFFFF',
-    fontSize: 28,
-    lineHeight: 30,
+    fontSize: 29,
+    lineHeight: 31,
   },
 });

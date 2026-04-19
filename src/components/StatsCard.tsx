@@ -1,49 +1,60 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, radius, shadow, spacing } from '../theme';
-import { formatInr } from '../utils/format';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { radius, shadow, spacing } from '../theme';
 
-type StatsCardProps = {
-  totalPending: number;
+type StatItem = {
+  id: string;
+  label: string;
+  value: string;
+  highlight?: boolean;
 };
 
-export const StatsCard = ({ totalPending }: StatsCardProps) => (
-  <LinearGradient
-    colors={['#2563EB', '#1D4ED8']}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.container}
-  >
-    <Text style={styles.label}>Total Pending</Text>
-    <Text style={styles.value}>{formatInr(totalPending)}</Text>
-    <View style={styles.footer}>
-      <Text style={styles.footerText}>Track dues. Close faster.</Text>
-    </View>
-  </LinearGradient>
+type StatsCardProps = {
+  stats: StatItem[];
+};
+
+export const StatsCard = ({ stats }: StatsCardProps) => (
+  <FlatList
+    horizontal
+    data={stats}
+    keyExtractor={(item) => item.id}
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.listContent}
+    renderItem={({ item }) => (
+      <LinearGradient
+        colors={item.highlight ? ['#2563EB', '#4F46E5'] : ['#3B82F6', '#6366F1']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.card}
+      >
+        <Text style={styles.value}>{item.value}</Text>
+        <Text style={styles.label}>{item.label}</Text>
+      </LinearGradient>
+    )}
+  />
 );
 
 const styles = StyleSheet.create({
-  container: {
+  listContent: {
+    paddingBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  card: {
+    width: 220,
     borderRadius: radius.lg,
     padding: spacing.lg,
-    marginBottom: spacing.xl,
+    minHeight: 122,
+    justifyContent: 'space-between',
     ...shadow.card,
   },
-  label: {
-    color: '#BFDBFE',
-    fontSize: 14,
-  },
   value: {
-    color: colors.card,
-    fontSize: 34,
+    color: '#FFFFFF',
+    fontSize: 28,
     fontWeight: '700',
-    marginTop: 8,
   },
-  footer: {
-    marginTop: spacing.md,
-  },
-  footerText: {
+  label: {
     color: '#DBEAFE',
     fontSize: 13,
+    fontWeight: '600',
   },
 });

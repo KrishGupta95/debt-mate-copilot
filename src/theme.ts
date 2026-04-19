@@ -10,6 +10,7 @@ export const colors = {
   textSecondary: '#475569',
   border: '#E2E8F0',
   pending: '#F59E0B',
+  muted: '#94A3B8',
 };
 
 export const spacing = {
@@ -30,9 +31,9 @@ export const shadow = {
   card: Platform.select({
     ios: {
       shadowColor: '#0F172A',
-      shadowOffset: { width: 0, height: 4 },
+      shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.08,
-      shadowRadius: 12,
+      shadowRadius: 14,
     },
     android: {
       elevation: 4,

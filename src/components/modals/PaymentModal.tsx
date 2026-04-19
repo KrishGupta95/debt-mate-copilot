@@ -1,4 +1,7 @@
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppButton } from '../ui/AppButton';
+import { AppCard } from '../ui/AppCard';
+import { AppInput } from '../ui/AppInput';
 import { colors, radius, spacing } from '../../theme';
 import { formatInr } from '../../utils/format';
 
@@ -30,7 +33,7 @@ export const PaymentModal = ({
       <View style={styles.container}>
         <Text style={styles.title}>Add Payment</Text>
 
-        <View style={styles.summaryCard}>
+        <AppCard style={styles.summaryCard}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Original</Text>
             <Text style={styles.summaryValue}>{formatInr(originalAmount)}</Text>
@@ -43,14 +46,15 @@ export const PaymentModal = ({
             <Text style={styles.summaryLabel}>Remaining</Text>
             <Text style={[styles.summaryValue, styles.remaining]}>{formatInr(remaining)}</Text>
           </View>
-        </View>
+        </AppCard>
 
-        <TextInput
-          style={styles.input}
+        <AppInput
+          label="Payment Amount"
           placeholder="Enter payment amount"
           keyboardType="numeric"
           value={amount}
           onChangeText={onAmountChange}
+          containerStyle={styles.amountInput}
         />
 
         <View style={styles.quickActions}>
@@ -65,12 +69,8 @@ export const PaymentModal = ({
         </View>
 
         <View style={styles.actions}>
-          <Pressable style={[styles.actionButton, styles.cancelButton]} onPress={onClose}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </Pressable>
-          <Pressable style={[styles.actionButton, styles.payButton]} onPress={onSubmit}>
-            <Text style={styles.payText}>Save Payment</Text>
-          </Pressable>
+          <AppButton label="Cancel" variant="secondary" onPress={onClose} style={styles.actionButton} />
+          <AppButton label="Save Payment" onPress={onSubmit} style={styles.actionButton} />
         </View>
       </View>
     </View>
@@ -98,8 +98,6 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     backgroundColor: '#EFF6FF',
-    borderRadius: radius.md,
-    padding: spacing.md,
     marginBottom: spacing.md,
   },
   summaryRow: {
@@ -115,15 +113,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   remaining: {
-    color: colors.danger,
+    color: '#DC2626',
   },
-  input: {
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
-    marginBottom: spacing.sm,
+  amountInput: {
+    fontSize: 22,
+    fontWeight: '700',
   },
   quickActions: {
     flexDirection: 'row',
@@ -147,22 +141,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    paddingVertical: 14,
-  },
-  cancelButton: {
-    backgroundColor: '#E2E8F0',
-  },
-  payButton: {
-    backgroundColor: colors.success,
-  },
-  cancelText: {
-    color: colors.textSecondary,
-    fontWeight: '700',
-  },
-  payText: {
-    color: colors.card,
-    fontWeight: '700',
   },
 });
